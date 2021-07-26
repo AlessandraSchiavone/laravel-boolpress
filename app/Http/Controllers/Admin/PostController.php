@@ -4,10 +4,31 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Post;
 
 class PostController extends Controller
 {
+    private $postValidationArray = [
+        'title'=> 'required|max:255',
+        'content'=> 'required'
+    ];
+
+    private function generateSlug($data){
+        $slug = Str::slug($data["title"],'-');
+
+        $existingPost  = Post::where('slug', $slug)->first();
+        $slugBase = $slug;
+        $count = 1;
+
+        while ($existingPost){
+           $slug = $slugBase . "-". $count;
+
+           $existingPost  = Post::where('slug', $slug)->first();
+           $count++;
+        }
+        return $slug;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -25,9 +46,9 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Post $post)
     {
-        //
+        return view("admin.posts.create", compact('post'));
     }
 
     /**
@@ -38,7 +59,20 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request -> all();
+        $request -> validate($this->postValidationArray);
+        $newPost = new Post();
+        $slug = $this -> generateSlug($data);
+
+        $data["slug"] = $slug;
+        $newPost-> fill($data);
+
+        $newPost -> save();
+
+        return redirect() -> route('admin.posts.show', $newPost -> id);
+
+
+
     }
 
     /**
@@ -47,9 +81,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Post $post)
     {
-        //
+        return view("admin.posts.show", compact('post'));
     }
 
     /**
@@ -58,9 +92,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        //
+        return view("admin.posts.edit", compact('post'));
     }
 
     /**
@@ -70,9 +104,21 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        $data = $request -> all();
+        $request -> validate($this->postValidationArray);
+
+        if($post -> title != $data["title"] ){
+            $slug = $this -> generateSlug($data);
+
+            $data["slug"] = $slug;
+
+        }
+
+        $post ->update($data);
+        return redirect()->route('admin.posts.show', $post-> id);
+
     }
 
     /**
@@ -81,8 +127,12 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        //
+        $post -> delete();
+
+        return redirect()
+        ->route('admin.posts.index')
+        ->with('deleted', $post->title);
     }
 }

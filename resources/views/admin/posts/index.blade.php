@@ -2,7 +2,14 @@
 
 @section('content')
     <div class="container">
+        @if(session('deleted'))
+        <div class="alert alert-success">
+           <strong>{{ session('deleted')}}  eliminato correttamente!</strong> 
+           
+        </div>
+         @endif
         <h1 class="my-4">Elenco Articoli</h1>
+        <a href="{{ route('admin.posts.create') }}" class="btn btn-primary mb-4">Nuovo articolo</a>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -13,26 +20,32 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($posts as $item)
+                @foreach ($posts as $post)
                     <tr>
-                        <td>{{ $item->id }}</td>
-                        <td>{{ $item->title }}</td>
-                        <td>{{ $item->slug }}</td>
+                        <td>{{ $post->id }}</td>
+                        <td>{{ $post->title }}</td>
+                        <td>{{ $post->slug }}</td>
                         <td>
-                            <a href="" class="btn btn-success">
+                            <a href="{{ route('admin.posts.show', $post->id) }}" class="btn btn-success">
                                 <i class="fas fa-eye"></i>
                             </a>
                         </td>
                         <td>
-                            <a href="" class="btn btn-primary">
+                            <a href=" {{ route('admin.posts.edit', $post->id) }} " class="btn btn-primary">
                                 <i class="fas fa-edit"></i>
                             </a>
                         </td>
                         <td>
-                            <a href="" class="btn btn-danger">
+                            <form action="{{ route('admin.posts.destroy', $post -> id )}}" method="POST" onSubmit="return confirm('Sei sicuro di voler eliminare questo articolo?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-danger" >
                                 <i class="fas fa-times"></i>
-                            </a>
+                                </button>
+                            </form>
+                            
                         </td>
+                            
                     </tr>
                 @endforeach
             </tbody>
