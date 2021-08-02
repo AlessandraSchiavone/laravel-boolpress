@@ -8,10 +8,26 @@ use App\Post;
 
 class PostController extends Controller
 {
+    /**
+     * Archivio post
+    */ 
     public function index() {
         //$posts = Post::all();
         $posts = Post::paginate(6);
 
         return response()->json($posts);
     }
+    /**
+     *  Dettaglio post
+     */
+    public function show($slug){
+
+        $post = Post::where('slug', $slug)
+        ->with(['category', 'tags'])
+        ->first();
+
+        return response()->json($post);
+
+    }
+
 }

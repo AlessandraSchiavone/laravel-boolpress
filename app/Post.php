@@ -12,6 +12,11 @@ class Post extends Model
         'slug',
         'content'
     ];
+    // EAGER LOADING
+    // protected $with = [
+    //     'category',
+    //     'tags'
+    // ];
     /**
      * Relazioni
      */
