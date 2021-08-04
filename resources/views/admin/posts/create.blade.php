@@ -4,7 +4,7 @@
 
     <div class="container">
       <h1 class="my-4">Inserisci un nuovo articolo</h1>
-      <form action="{{ route('admin.posts.store') }}" method="POST">
+      <form action="{{ route('admin.posts.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('POST')
             <div class="form-group">
@@ -16,12 +16,20 @@
             </div>
             <div class="form-group">
                 <label for="content">Contenuto </label>
-                <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content" placeholder="Inserisci il contenuto dell'articolo" rows="6">
-                {{ old('content') }} </textarea>
+                <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content" placeholder="Inserisci il contenuto dell'articolo" rows="6">{{ old('content') }} </textarea>
                 @error('content')
                     <small class="text-danger" >{{ $message }}</small>
                 @enderror
             </div>
+            <!-- file upload -->
+            <div class="form-group">
+                <label for="cover">Immagine di copertina</label>
+                <input type="file" name="cover" class="form-control-file @error('cover') is-invalid @enderror" id="cover">
+                @error('cover')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+            <!-- select -->
             <div class="form-group">
                 <label for="category_id">Categoria</label>
                 <select class="form-control @error('category_id') is-invalid @enderror" name="category_id" id="category_id">
@@ -36,6 +44,7 @@
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
             </div> 
+            <!-- checkbox -->
             <div class="form-group">
                 <h5>Tags</h5>
                 @foreach($tags as $tag)
@@ -51,6 +60,7 @@
                     </div>
                 @enderror 
             </div> 
+           
             <button type="submit" class="btn btn-primary">Crea</button>
             <a  class="btn btn-secondary ml-2" href="{{ route('admin.posts.index', $post->id ) }}">Elenco post</a>
         </form>  

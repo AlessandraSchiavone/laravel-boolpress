@@ -11,6 +11,7 @@ import About from './pages/About';
 import Blog from './pages/Blog';
 import SinglePost from './pages/SinglePost';
 import NotFound from './pages/NotFound';
+import Category from './pages/Category';
 
 
 const router = new VueRouter({
@@ -38,6 +39,11 @@ const router = new VueRouter({
             path:'/blog/:slug',
             name:'single-post',
             component:SinglePost
+        },
+        {
+            path:'/blog/category/:slug',
+            name:'category',
+            component:Category
         },
         //deve essere l'ultima
         {
